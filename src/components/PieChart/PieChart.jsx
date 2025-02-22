@@ -19,8 +19,8 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 
 export default function PieChartComponent({data}) {
     return (
-        <ResponsiveContainer width="100%" height={250} className={styles.pieChart}>
-            <h2>Average Completions</h2>
+        <ResponsiveContainer width="100%" height={250} className={styles.pieChart} style={{marginBottom : "50px"}}>
+            <h2>Overall Data:</h2>
             <PieChart width={400} height={400}>
                 <Pie
                     data={data}

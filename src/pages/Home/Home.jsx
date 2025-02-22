@@ -1,125 +1,91 @@
 import { useEffect, useState } from "react";
 import Card from "../../components/Card/Card";
 import styles from "./Home.module.css";
-import HabitsList from "../../components/habitsList/habitsList";
-import HabitForm from "../../components/Forms/HabitForm/HabitForm";
+import HealthAndFitnessList from "../../components/healthAndFitnessList/HealthAndFitnessList_temp.jsx";
+import HealthAndFitnessForm from "../../components/Forms/healthAndFitnessForm/HealthAndFitnessForm";
 import Modal from "../../components/Modal/Modal";
 import PieChart from "../../components/PieChart/PieChart";
-import BarChart from "../../components/BarChart/BarChart";
+import BarChart_temp from "../../components/BarChart/BarChart_temp.jsx";
 
 export default function Home() {
-  const [habitList, setHabitList] = useState([]);
-  const [isOpenHabit, setIsOpenHabit] = useState(false);
+  const [healthList, setHealthList] = useState([]);
+  const [isOpenhealthAndFitness, setIsOpenhealthAndFitness] = useState(false);
+  const [totalIntake, setTotalIntake] = useState(0);
+  const [totalBurned, setTotalBurned] = useState(0);
+  const [barChatData, setBarChartData] = useState([]);
 
-  // Load data from localStorage only on initial mount
   useEffect(() => {
-    const storedHabits = localStorage.getItem("habits");
-    // console.log("Stored Habits from localStorage:", storedHabits); // Debugging: Log stored data
-
-    if (storedHabits) {
+    const storedHnF = localStorage.getItem("healthAndFitness");
+    if (storedHnF) {
       try {
-        const parsedHabits = JSON.parse(storedHabits);
-        // console.log("Parsed Habits:", parsedHabits); // Debugging: Log parsed data
-        setHabitList(parsedHabits);
+        const parsedHnF = JSON.parse(storedHnF);
+        setHealthList(parsedHnF);
       } catch (error) {
-        // console.error("Error parsing stored habits, resetting localStorage:", error);
-        localStorage.removeItem("habits"); // Clear localStorage on error
-        setHabitList([]); // Reset habitList to empty array
+        localStorage.removeItem("healthAndFitness");
+        setHealthList([]);
       }
     }
   }, []);
 
-  // Update localStorage whenever habitList changes
   useEffect(() => {
-    if (habitList.length > 0) {
-      // console.log("Saving updated habits to localStorage:", habitList); // Debugging: Log habitList before saving
-      localStorage.setItem("habits", JSON.stringify(habitList));
+    if (healthList.length > 0) {
+      localStorage.setItem("healthAndFitness", JSON.stringify(healthList));
+  
+      const intakeCount = healthList.reduce((a, b) => a + parseInt(b.calorieIntake || 0), 0);
+      const burnedCount = healthList.reduce((a, b) => a + parseInt(b.calorieBurned || 0), 0);
+  
+      setTotalBurned(burnedCount);
+      setTotalIntake(intakeCount);
+      const sevenDaysData = healthList
+      .filter((item) => {
+        const itemDate = new Date(item.date); // Assuming `date` is in YYYY-MM-DD format
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        return itemDate >= sevenDaysAgo;
+      })
+      .map(({ date, calorieIntake, calorieBurned }) => ({
+        date,
+        calorieIntake,
+        calorieBurned,
+      }));
+    setBarChartData(sevenDaysData);
     }
-  }, [habitList]);
-
-  // Aggregate the counts of selected options (reading, exercise, meditation)
-
-  function isWithinThisWeek(startDateString, checkDateString) {
-    const startDate = new Date(startDateString);
-    const checkDate = new Date(checkDateString);
-
-    // Calculate 7 days before the start date
-    const pastDate = new Date(startDate);
-    pastDate.setDate(startDate.getDate() - 7); // Handles month/year transitions
-
-    return checkDate >= pastDate && checkDate <= startDate;
-  }
-
-  const getTotalCountsWeekly = () => {
-    let readingCount = 0;
-    let exerciseCount = 0;
-    let meditationCount = 0;
-
-    habitList.forEach(habit => {
-      const currentDay = habit.date;
-      const today = new Date();
-      if(isWithinThisWeek(today, currentDay)) {
-        if (habit.selectedOptions.reading) readingCount++;
-        if (habit.selectedOptions.exercise) exerciseCount++;
-        if (habit.selectedOptions.meditation) meditationCount++;
-      }
-    });
-    return { readingBar: readingCount, exerciseBar: exerciseCount, meditationBar: meditationCount };
-  };
-  const getTotalCountsOverall = () => {
-    let readingCount = 0;
-    let exerciseCount = 0;
-    let meditationCount = 0;
-
-    habitList.forEach(habit => {
-        if (habit.selectedOptions.reading) readingCount++;
-        if (habit.selectedOptions.exercise) exerciseCount++;
-        if (habit.selectedOptions.meditation) meditationCount++;
-    });
-    return { readingPie: readingCount, exercisePie: exerciseCount, meditationPie: meditationCount };
-  };
-  const { readingBar, exerciseBar, meditationBar } = getTotalCountsWeekly();
-  const { readingPie, exercisePie, meditationPie } = getTotalCountsOverall();
-
-  const barChartData = [
-    { name: "Reading", value: readingBar },
-    { name: "Exercise", value: exerciseBar },
-    { name: "Meditation", value: meditationBar },
-  ];
+  }, [healthList]);
+  
   const pieChartData = [
-    { name: "Reading", value: readingPie },
-    { name: "Exercise", value: exercisePie },
-    { name: "Meditation", value: meditationPie },
+    { name: "Intake", value: totalIntake },
+    { name: "Burned", value: totalBurned },
   ];
 
   return (
     <div className={styles.container}>
-      <h1>Habit Tracker</h1>
+      <h1>Health And Fitness Tracker</h1>
 
       <div className={styles.cardsWrapper}>
         <Card
-          title="Update Today's Progress"
+          title="Update Today's Data"
           buttonText="+ Add data"
-          setIsOpenHabit={setIsOpenHabit}
+          isOpenhealthAndFitness = {isOpenhealthAndFitness}
+          setIsOpenhealthAndFitness={setIsOpenhealthAndFitness}
         />
 
-        <PieChart data={pieChartData} />
-        <BarChart data={barChartData} />
+        <BarChart_temp data={barChatData} />
       </div>
 
       <div className={styles.transactionsWrapper}>
-        <HabitsList
-          habitList={habitList}
-          setHabitList={setHabitList}
-          title="Recent Habit Completions"
+        <HealthAndFitnessList
+          healthList={healthList}
+          setHealthList={setHealthList}
+          title="Recent Health Statistics."
         />
+        <PieChart data={pieChartData} />
       </div>
 
-      <Modal isOpen={isOpenHabit} setIsOpen={setIsOpenHabit}>
-        <HabitForm
-          setIsOpen={setIsOpenHabit}
-          habitList={habitList}
-          setHabitList={setHabitList}
+      <Modal isOpen={isOpenhealthAndFitness} setIsOpen={setIsOpenhealthAndFitness}>
+        <HealthAndFitnessForm
+          setIsOpen={setIsOpenhealthAndFitness}
+          healthList={healthList}
+          setHealthList={setHealthList}
         />
       </Modal>
     </div>

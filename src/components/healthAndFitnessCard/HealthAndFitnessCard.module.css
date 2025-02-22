@@ -61,7 +61,7 @@
         gap:12px;
     }
     .cardInner:last-child{
-        padding-left: 3.3rem;
+        /* padding-left: 3.3rem; */
         justify-content: space-between;
         width: 100%;
     }

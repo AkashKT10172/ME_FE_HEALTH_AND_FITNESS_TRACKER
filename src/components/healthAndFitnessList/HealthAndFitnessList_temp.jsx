@@ -1,25 +1,23 @@
-import styles from './habitsList.module.css'
+import styles from './healthAndFitnessList.module.css'
 import Modal from '../Modal/Modal'
 import { useEffect, useState } from 'react'
 import Pagination from '../Pagination/Pagination'
-import HabitsCard from '../habitsCard/habitsCard'
-import EditHabitForm from '../Forms/editHabitForm/EditHabitForm'
+import HealthAndFitnessCard from '../healthAndFitnessCard/HealthAndFitnessCard_temp'
+import EditHealthAndFitnessForm from '../Forms/edithealthAndFitnessForm/EditHealthAndFitnessForm'
 
-export default function TransactionList({ habitList, setHabitList, title }) {
+export default function HealthAndFitnessList({ healthList, setHealthList, title }) {
 
     const [editId, setEditId] = useState(0)
     const [isDisplayEditor, setIsDisplayEditor] = useState(false)
-    const [currentHabits, setCurrentHabits] = useState([])
+    const [currenthealthAndFitness, setCurrenthealthAndFitness] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
     const maxRecords = 3;
     const [totalPages, setTotalPages] = useState(0)
 
     const handleDelete = (id) => {
-        const updatedHabitList = habitList.filter(item => item.id !== id);
-        setHabitList(updatedHabitList);
-
-        // Persist the updated habit list to localStorage
-        localStorage.setItem("habits", JSON.stringify(updatedHabitList));
+        const updatedHealthList = healthList.filter(item => item.id !== id);
+        setHealthList(updatedHealthList);
+        localStorage.setItem("healthAndFitness", JSON.stringify(updatedHealthList));
     };
 
     const handleEdit = (id) => {
@@ -30,12 +28,12 @@ export default function TransactionList({ habitList, setHabitList, title }) {
     useEffect(() => {
 
         const startIndex = (currentPage - 1) * maxRecords
-        const endIndex = Math.min(currentPage * maxRecords, habitList.length)
+        const endIndex = Math.min(currentPage * maxRecords, healthList.length)
 
-        setCurrentHabits([...habitList].slice(startIndex, endIndex))
-        setTotalPages(Math.ceil(habitList.length / maxRecords))
+        setCurrenthealthAndFitness([...healthList].slice(startIndex, endIndex))
+        setTotalPages(Math.ceil(healthList.length / maxRecords))
 
-    }, [currentPage, habitList])
+    }, [currentPage, healthList])
 
     // update page if all items on current page have been deleted
     useEffect(() => {
@@ -51,15 +49,15 @@ export default function TransactionList({ habitList, setHabitList, title }) {
 
             {title && <h2>{title}</h2>}
 
-            {habitList.length > 0 ?
+            {healthList.length > 0 ?
                 <div className={styles.list}>
                     <div>
-                        {currentHabits.map(habit => (
-                            <HabitsCard
-                                details={habit}
-                                key={habit.id}
-                                handleDelete={() => handleDelete(habit.id)}
-                                handleEdit={() => handleEdit(habit.id)}
+                        {currenthealthAndFitness.map(health => (
+                            <HealthAndFitnessCard
+                                details={health}
+                                key={health.id}
+                                handleDelete={() => handleDelete(health.id)}
+                                handleEdit={() => handleEdit(health.id)}
                             />
                         ))}
                     </div>
@@ -74,9 +72,9 @@ export default function TransactionList({ habitList, setHabitList, title }) {
 
 
             <Modal isOpen={isDisplayEditor} setIsOpen={setIsDisplayEditor}>
-                <EditHabitForm
-                    habitList={habitList}
-                    setHabitList={setHabitList}
+                <EditHealthAndFitnessForm
+                    healthList={healthList}
+                    setHealthList={setHealthList}
                     editId={editId}
                     setIsOpen={setIsDisplayEditor}
                 />
