@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./editHealthAndFitnessForm.css";
+import "./EditHealthAndFitnessForm.css";
 
 export default function EditHealthAndFitnessForm({
   healthList,
