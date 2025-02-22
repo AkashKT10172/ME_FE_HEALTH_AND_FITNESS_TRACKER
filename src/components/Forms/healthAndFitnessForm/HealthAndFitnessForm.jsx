@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import './healthAndFitnessForm.css';
+import './HealthAndFitnessForm.css';
 
 export default function HealthAndFitnessForm({ setIsOpen, healthList, setHealthList }) {
   const [description, setDescription] = useState('');
